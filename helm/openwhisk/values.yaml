@@ -258,6 +258,14 @@ controller:
   jvmHeapMB: "1024"
   jvmOptions: ""
   loglevel: "INFO"
+  functionManager:
+    enabled: true
+    image:
+      imageName: "hugy718/function-manager"
+      imageTag: "v3"
+      imagePullPolicy: "IfNotPresent"
+    port: 7310
+    poolSize: 3
 
 # Invoker configurations
 invoker:

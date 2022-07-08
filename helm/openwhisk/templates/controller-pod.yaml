@@ -211,3 +211,18 @@ spec:
         - name: "CONFIG_whisk_helm_release"
           value: "{{ .Release.Name }}"
 {{- end }}
+
+{{- if .Values.controller.functionManager.enabled }}
+      - name: function-manager
+        image: "{{ .Values.controller.functionManager.image.imageName }}:{{ .Values.controller.functionManager.image.imageTag }}"
+        imagePullPolicy: {{ .Values.controller.functionManager.image.imagePullPolicy }}
+        ports:
+          - name: fm-port
+            containerPort: {{ .Values.controller.functionManager.port }}
+            protocol: TCP
+        env:
+        - name: "OW_CONTROLLER_PORT"
+          value: {{ .Values.controller.port | quote }}
+        - name: "OW_FUNCTION_MANAGER_POOL_SIZE"
+          value: {{ .Values.controller.functionManager.poolSize | quote }}   
+{{- end }}
