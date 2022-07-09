@@ -27,7 +27,8 @@ spec:
     name: {{ .Release.Name }}-controller
   ports:
     - port: {{ .Values.controller.port }}
-{{- if .Values.controller.functionManager.enabled }}
-      targetPort: {{ .Values.controller.functionManager.port }}
-{{- end }}
       name: http
+{{- if .Values.controller.functionManager.enabled }}
+    - port: {{ .Values.controller.functionManager.port }}
+      name: http-fm
+{{- end }}

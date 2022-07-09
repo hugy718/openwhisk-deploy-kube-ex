@@ -56,6 +56,12 @@ data:
          keepalive 512;
       }
 
+      upstream controllers-fm {
+         server {{ include "openwhisk.controller_host" . }}:{{ .Values.controller.functionManager.port }} fail_timeout=60s;
+
+         keepalive 512;
+      }
+
       server {
         listen 80;
 {{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
@@ -100,6 +106,10 @@ data:
                 rewrite    /(.*) /api/v1/web/${namespace}/$1 break;
             }
             proxy_pass http://controllers;
+            proxy_read_timeout 75s; # 70+5 additional seconds to allow controller to terminate request
+        }
+        location ~ /api/v1/namespaces/.*/fm-actions {
+            proxy_pass http://controllers-fm;
             proxy_read_timeout 75s; # 70+5 additional seconds to allow controller to terminate request
         }
 
