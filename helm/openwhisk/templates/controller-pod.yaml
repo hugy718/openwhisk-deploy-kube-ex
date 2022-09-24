@@ -217,9 +217,9 @@ spec:
         image: "{{ .Values.controller.functionManager.image.imageName }}:{{ .Values.controller.functionManager.image.imageTag }}"
         imagePullPolicy: {{ .Values.controller.functionManager.image.imagePullPolicy }}
         ports:
-          - name: fm-port
-            containerPort: {{ .Values.controller.functionManager.port }}
-            protocol: TCP
+        - name: fm-port
+          containerPort: {{ .Values.controller.functionManager.port }}
+          protocol: TCP
         env:
         - name: "OW_CONTROLLER_PORT"
           value: {{ .Values.controller.port | quote }}

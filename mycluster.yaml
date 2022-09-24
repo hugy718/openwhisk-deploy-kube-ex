@@ -1,0 +1,57 @@
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: userver
+    apiHostPort: 31001
+  # scale up the deployment
+  limits:
+    actionsInvokesPerminute: 6000 #(default: 60)
+    actionsInvokesConcurrent: 3000 #(defualt: 30)
+    triggersFiresPerminute: 6000 #(default: 60)
+    actions:
+      memory: #(default values)
+        min: "128m"
+        max: "2048m"
+        std: "256m"
+      concurrency:
+        min: 1
+        max: 10
+        std: 1
+    activation:
+      payload:
+        max: "2097152"
+  containerPool:
+    userMemory: "4096m" # (default 2048m divided by default 256m per action contianer, there can be only 8)
+  runtimes: "myruntimes.json" # stripped of unused runtimes, most impotantly, remove the prewarm configuration for nodejs:14
+  loadbalancer:
+    blackboxFraction: "99%" # (default 10% can limit the invoker instances being used for blackbox action. if less than 10 then 1)
+
+# disable dynamic volume provisioning
+k8s:
+  persistence:
+    enabled: false
+
+# for single worker cluster, turn off affinity as stated in Initial setup in the root README 
+affinity:
+  enabled: false
+
+toleration:
+  enabled: false
+
+# use custom wskinvoker to use sgx
+invoker:
+  imageName: "hugy718/wskinvoker"
+  imageTag: "v3"
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false -Dwhisk.spi.LogStoreProvider=org.apache.openwhisk.core.containerpool.logging.LogDriverLogStoreProvider" # second options to turn of log processing at invoker
+  containerFactory:
+    impl: "docker"
+    enableConcurrency: true # for concurrency
+
+# turn on metrics collection
+metrics:
+  prometheusEnabled: true # by default false (system metrics)
+  userMetricsEnabled: true # by default false
+
+# user metric grafana password (explicitly set to default here)
+grafana:
+  adminPassword: admin
